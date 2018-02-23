@@ -1,3 +1,5 @@
+[![Build status](https://badge.buildkite.com/accb37a80d88e0ffda97f55451d05eea2004ed8bbb80a27958.svg)](https://buildkite.com/bazel/rules-sass-postsubmit)
+
 # Sass Rules for Bazel
 
 <div class="toc">
