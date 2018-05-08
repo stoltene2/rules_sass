@@ -44,6 +44,12 @@ def _sass_binary_impl(ctx):
     for src in transitive_sources:
         options += ["--load-path", src.path[:-len(src.basename)]]
 
+
+    for prefix in [".", ctx.var['BINDIR'], ctx.var['GENDIR']]:
+        options += ["--load-path", "%s/" % prefix]
+        for include_path in ctx.attr.include_paths:
+          options += ["--load-path", "%s/%s" % (prefix, include_path)]
+
     ctx.action(
         inputs = [sassc, ctx.file.src] + list(transitive_sources),
         executable = sassc,
@@ -64,6 +70,11 @@ def _multi_sass_binary_impl(ctx):
 
     for src in transitive_sources:
         options += ["--load-path", src.path[:-len(src.basename)]]
+
+    for prefix in [".", ctx.var['BINDIR'], ctx.var['GENDIR']]:
+        options += ["--load-path", "%s/" % prefix]
+        for include_path in ctx.attr.include_paths:
+          options += ["--load-path", "%s/%s" % (prefix, include_path)]
 
     outputs = []
 
@@ -112,6 +123,9 @@ sass_binary = rule(
             mandatory = True,
             single_file = True,
         ),
+        "include_paths": attr.string_list(
+            doc = "Additional directories to search when resolving imports"
+        ),
         "output_style": attr.string(default = "compressed"),
         "deps": sass_deps_attr,
         "_sassc": attr.label(
@@ -134,8 +148,12 @@ multi_sass_binary = rule(
             allow_files = SASS_FILETYPES,
             mandatory = True
         ),
+        "include_paths": attr.string_list(
+            doc = "Additional directories to search when resolving imports"
+        ),
         "output_style": attr.string(default = "compressed"),
         "deps": sass_deps_attr,
+
         "_sassc": attr.label(
             default = Label("//sass:sassc"),
             executable = True,
